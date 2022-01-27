@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>canvas_base.html</title>
+</head>
+
+<body>
+    <section>
+        <h1 id="view"></h1>
+        <h2 id="body"></h2>
+        <nav>
+            <!-- 線の色を変更するHTML要素 -->
+            <input type="color" id="col">
+            <!-- 線の太さを変更するHTML要素 -->
+            <input type="range" id="size" min="1" max="100" value="1">
+            <button id="clear_btn">クリア</button>
+            <a  id=“download” href="#" download="canvas.jpg">ダウンロード</a> 
+            <button id="eraser">消しゴム</button>
+        </nav>
+        <canvas id="drowarea" width="500" height="500" style="border:1px solid blue;"></canvas>
+    </section>
+
+    <script src="jquery-2.1.3.min.js"></script>
+    <script>
+        //初期化(変数letで宣言)
+        let canvas_mouse_event = false; //スイッチ [ true=線を引く, false=線は引かない ]  ＊＊＊
+        let oldX = 0; //１つ前の座標を代入するための変数
+        let oldY = 0; //１つ前の座標を代入するための変数
+        let bold_line = 1; //ラインの太さをここで指定 スライダー値
+        let color = "#000000"; //ラインの色をここで指定 カラーピッカー地 input type
+
+         $("#col").on("change", function () {
+                color = $(this).val();
+                $("#view").html(v);
+            });
+         $("#size").on("change", function () {
+                bold_line = $(this).val();
+                $("#body").html(v);
+            });
+   
+        const can = $("#drowarea")[0]; 
+        const ctx = can.getContext("2d"); 
+
+     $(can).on("mousedown",function(e){
+        oldX = e.offsetX;       
+        oldY = e.offsetY; 
+        canvas_mouse_event=true;
+});
+
+       
+         $(can).on("mousemove",function(e){
+        if(canvas_mouse_event==true){
+             const px = e.offsetX;
+             const py = e.offsetY;
+             ctx.strokeStyle = color;
+             ctx.lineWidth = bold_line;
+             ctx.beginPath();
+             ctx.lineJoin= "round";
+             ctx.lineCap = "round";
+             ctx.moveTo(oldX, oldY);
+             ctx.lineTo(px, py);
+             ctx.stroke();
+             oldX = px;
+             oldY = py;
+           }
+       });
+
+     
+        $(can).on("mouseup",function(){
+            canvas_mouse_event==false;
+        });
+
+       
+        $("#clear_btn").on("click",function(){
+          ctx.beginPath();
+          ctx.clearRect(0,0, can.width, can.height);  
+        });
+
+        $("#download").on("click", function () {
+         canvas = document.getElementById('drowarea');
+            var base64 = canvas.toDataURL("image/jpeg");
+            document.getElementById("download").href = base64;
+        });
+          
+                    
+        $("#eraser").on("click", function () {
+               color="#FFFFFF";
+            });       
+               
+    </script>
+</body>
+
+</html>
